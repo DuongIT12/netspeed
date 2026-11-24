@@ -11,7 +11,6 @@
   <title>NetSpeed Pro</title>
 
   <script>
-    // Chuyển đổi SVG Data URI sang PNG 180x180 ngay lập tức để Safari iOS nhận diện apple-touch-icon
     (function generateAppleTouchIcon() {
       const svgMarkup = `
         <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
@@ -57,6 +56,9 @@
       --card-border: rgba(255, 255, 255, 0.06);
       --accent: #00e5ff;
       --upload: #a855f7;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --good: #10b981;
       --text: #f8fafc;
       --muted: #94a3b8;
     }
@@ -72,7 +74,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    header { text-align: center; padding-top: 8px; margin-bottom: 14px; }
+    header { text-align: center; padding-top: 8px; margin-bottom: 12px; }
     header h1 { font-size: 19px; font-weight: 800; letter-spacing: 0.6px; color: var(--accent); }
 
     .net-info-bar {
@@ -84,7 +86,7 @@
       justify-content: space-between;
       align-items: center;
       font-size: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       gap: 8px;
     }
     .net-left { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
@@ -106,12 +108,12 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 8px 0 18px;
+      margin: 6px 0 16px;
     }
     .speed-circle {
       position: relative;
-      width: 220px;
-      height: 220px;
+      width: 215px;
+      height: 215px;
       border-radius: 50%;
       background: radial-gradient(circle at center, #182238 60%, #0b0f19 100%);
       border: 4px solid #1e293b;
@@ -145,7 +147,7 @@
       transform: translateY(-10px);
     }
 
-    .speed-value { font-size: 48px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.05; text-shadow: 0 2px 10px rgba(11, 15, 25, 0.8); }
+    .speed-value { font-size: 46px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.05; text-shadow: 0 2px 10px rgba(11, 15, 25, 0.8); }
     .speed-unit { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 2px; }
     .phase-label { font-size: 11px; color: var(--accent); margin-top: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
     .testing-ul .phase-label { color: var(--upload); }
@@ -154,17 +156,33 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .metric-card {
       background: var(--card);
       border-radius: 14px;
-      padding: 12px 14px;
+      padding: 11px 14px;
       border: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    .metric-title { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.4px; }
+    .metric-title { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.4px; display: flex; justify-content: space-between; }
     .metric-val { font-size: 21px; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; }
     .metric-val span { font-size: 12px; font-weight: 500; color: var(--muted); }
+    .loaded-ping-tag {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .loaded-ping-tag strong { font-weight: 700; color: var(--text); }
+    .ping-good { color: var(--good) !important; }
+    .ping-warn { color: var(--warn) !important; }
+    .ping-bad { color: var(--danger) !important; }
 
     .btn-start {
       width: 100%;
@@ -178,7 +196,7 @@
       letter-spacing: 0.5px;
       cursor: pointer;
       transition: transform 0.1s, opacity 0.2s;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
     .btn-start:active { transform: scale(0.98); }
     .btn-start:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -210,13 +228,15 @@
       justify-content: space-between;
       align-items: center;
       font-size: 12px;
+      gap: 8px;
     }
-    .hist-meta { display: flex; flex-direction: column; gap: 3px; }
+    .hist-meta { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+    .hist-isp { color: var(--text); font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .hist-time { color: var(--muted); font-size: 11px; }
-    .hist-isp { color: var(--text); font-weight: 600; font-size: 12px; }
-    .hist-speeds { display: flex; gap: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+    .hist-speeds { display: flex; gap: 10px; text-align: right; font-variant-numeric: tabular-nums; flex-shrink: 0; }
     .hist-col span { display: block; font-size: 10px; color: var(--muted); }
     .hist-col strong { font-size: 14px; }
+    .hist-col small { display: block; font-size: 10px; color: var(--muted); }
     .dl-color { color: var(--accent); }
     .ul-color { color: var(--upload); }
     .empty-history { text-align: center; color: var(--muted); font-size: 12px; padding: 14px; background: var(--card); border-radius: 12px; }
@@ -248,20 +268,24 @@
 
   <div class="metrics-grid">
     <div class="metric-card">
-      <div class="metric-title">PING</div>
+      <div class="metric-title"><span>PING (IDLE)</span></div>
       <div class="metric-val" id="pingVal">-- <span>ms</span></div>
+      <div class="loaded-ping-tag" id="bloatStatus">Độ trễ không tải</div>
     </div>
     <div class="metric-card">
-      <div class="metric-title">JITTER</div>
+      <div class="metric-title"><span>JITTER</span></div>
       <div class="metric-val" id="jitterVal">-- <span>ms</span></div>
+      <div class="loaded-ping-tag">Biến thiên gói tin</div>
     </div>
     <div class="metric-card">
-      <div class="metric-title">DOWNLOAD</div>
+      <div class="metric-title"><span>DOWNLOAD</span></div>
       <div class="metric-val" id="dlVal">-- <span>Mbps</span></div>
+      <div class="loaded-ping-tag">Ping tải: <strong id="dlLoadedPing">-- ms</strong></div>
     </div>
     <div class="metric-card">
-      <div class="metric-title">UPLOAD</div>
+      <div class="metric-title"><span>UPLOAD</span></div>
       <div class="metric-val" id="ulVal">-- <span>Mbps</span></div>
+      <div class="loaded-ping-tag">Ping tải: <strong id="ulLoadedPing">-- ms</strong></div>
     </div>
   </div>
 
@@ -279,7 +303,7 @@
     const CF_DOWN = "https://speed.cloudflare.com/__down";
     const CF_UP = "https://speed.cloudflare.com/__up";
     const CF_TRACE = "https://speed.cloudflare.com/cdn-cgi/trace";
-    const STORAGE_KEY = "netspeed_history_v1";
+    const STORAGE_KEY = "netspeed_history_v2";
 
     const IATA_MAP = {
       HAN: "Hà Nội (HAN)",
@@ -316,7 +340,7 @@
 
     function pushChartPoint(mbps) {
       chartSamples.push(mbps);
-      if (chartSamples.length > 55) chartSamples.shift();
+      if (chartSamples.length > 70) chartSamples.shift();
       drawChart();
     }
 
@@ -379,6 +403,49 @@
       drawChart();
     });
 
+    function classifyPingColor(loadedMs, idleMs) {
+      const delta = loadedMs - idleMs;
+      if (delta <= 35) return "ping-good";
+      if (delta <= 100) return "ping-warn";
+      return "ping-bad";
+    }
+
+    // Bộ đo Loaded Ping chạy nền trong lúc đường truyền đang bão hòa
+    function startLoadedPingProbe(elementId, idlePing) {
+      let active = true;
+      const samples = [];
+      const el = document.getElementById(elementId);
+
+      const loop = async () => {
+        await sleep(800); // Chờ 0.8s cho lưu lượng bắt đầu chiếm băng thông
+        while (active) {
+          const t0 = performance.now();
+          try {
+            await fetch(`${CF_DOWN}?bytes=0&lp=${Date.now()}`, { cache: "no-store" });
+            const rtt = performance.now() - t0;
+            samples.push(rtt);
+            const avg = samples.reduce((a, b) => a + b, 0) / samples.length;
+            el.innerText = `${avg.toFixed(0)} ms`;
+            el.className = classifyPingColor(avg, idlePing);
+          } catch (e) {}
+          await sleep(350);
+        }
+      };
+
+      loop();
+
+      return {
+        stop: () => {
+          active = false;
+          if (samples.length === 0) return idlePing.toFixed(0);
+          const avg = samples.reduce((a, b) => a + b, 0) / samples.length;
+          el.innerText = `${avg.toFixed(0)} ms`;
+          el.className = classifyPingColor(avg, idlePing);
+          return avg.toFixed(0);
+        }
+      };
+    }
+
     async function fetchNetworkInfo() {
       try {
         const traceRes = await fetch(`${CF_TRACE}?r=${Date.now()}`, { cache: "no-store" });
@@ -431,19 +498,25 @@
 
       document.getElementById("pingVal").innerHTML = `${minPing.toFixed(1)} <span>ms</span>`;
       document.getElementById("jitterVal").innerHTML = `${jitter.toFixed(1)} <span>ms</span>`;
-      return { ping: minPing.toFixed(1), jitter: jitter.toFixed(1) };
+      return { ping: minPing, jitter: jitter.toFixed(1) };
     }
 
-    async function measureDownload() {
+    async function measureDownload(idlePing) {
       const circle = document.getElementById("circle");
       circle.className = "speed-circle testing-dl";
-      document.getElementById("phaseText").innerText = "Đang tải xuống...";
+      document.getElementById("phaseText").innerText = "Đang tăng tốc...";
       resetChart("#00e5ff");
 
-      const CONCURRENCY = 4;
-      const DURATION_MS = 8000;
-      const CHUNK_BYTES = 25 * 1000 * 1000;
+      const probe = startLoadedPingProbe("dlLoadedPing", idlePing);
+
+      const CONCURRENCY = 6;
+      const WARMUP_MS = 2000;
+      const DURATION_MS = 10000;
+      const CHUNK_BYTES = 50 * 1000 * 1000;
+
       let totalBytes = 0;
+      let measuredBytes = 0;
+      let measureStartTime = null;
       let lastSampleBytes = 0;
       let lastSampleTime = performance.now();
       let running = true;
@@ -462,8 +535,16 @@
             while (running) {
               const { done, value } = await reader.read();
               if (done) break;
-              totalBytes += value.byteLength;
-              if (performance.now() - startTime >= DURATION_MS) {
+              const now = performance.now();
+              const len = value.byteLength;
+              totalBytes += len;
+
+              if (now - startTime >= WARMUP_MS) {
+                if (measureStartTime === null) measureStartTime = now;
+                measuredBytes += len;
+              }
+
+              if (now - startTime >= DURATION_MS) {
                 running = false;
                 controller.abort();
                 break;
@@ -477,39 +558,56 @@
 
       const uiInterval = setInterval(() => {
         const now = performance.now();
-        const elapsedSec = (now - startTime) / 1000;
+        const elapsedMs = now - startTime;
         const deltaSec = (now - lastSampleTime) / 1000;
 
-        if (elapsedSec > 0.15 && deltaSec > 0) {
-          const avgMbps = (totalBytes * 8) / (elapsedSec * 1_000_000);
+        if (elapsedMs > 150 && deltaSec > 0) {
           const instantMbps = ((totalBytes - lastSampleBytes) * 8) / (deltaSec * 1_000_000);
-          document.getElementById("liveSpeed").innerText = avgMbps.toFixed(1);
           pushChartPoint(instantMbps);
           lastSampleBytes = totalBytes;
           lastSampleTime = now;
+
+          if (elapsedMs < WARMUP_MS) {
+            document.getElementById("liveSpeed").innerText = instantMbps.toFixed(1);
+          } else if (measureStartTime !== null) {
+            document.getElementById("phaseText").innerText = "Đang tải xuống...";
+            const validSec = Math.max((now - measureStartTime) / 1000, 0.1);
+            const steadyMbps = (measuredBytes * 8) / (validSec * 1_000_000);
+            document.getElementById("liveSpeed").innerText = steadyMbps.toFixed(1);
+          }
         }
       }, 150);
 
       await Promise.all(Array.from({ length: CONCURRENCY }, (_, i) => worker(i)));
       clearInterval(uiInterval);
+      const loadedPing = probe.stop();
 
-      const totalSec = (performance.now() - startTime) / 1000;
-      const finalMbps = ((totalBytes * 8) / (totalSec * 1_000_000)).toFixed(1);
+      const finalTime = performance.now();
+      const validTotalSec = measureStartTime ? Math.max((finalTime - measureStartTime) / 1000, 0.5) : ((finalTime - startTime) / 1000);
+      const validTotalBytes = measureStartTime ? measuredBytes : totalBytes;
+      const finalMbps = ((validTotalBytes * 8) / (validTotalSec * 1_000_000)).toFixed(1);
+
       document.getElementById("liveSpeed").innerText = finalMbps;
       document.getElementById("dlVal").innerHTML = `${finalMbps} <span>Mbps</span>`;
-      return finalMbps;
+      return { mbps: finalMbps, loadedPing };
     }
 
-    async function measureUpload() {
+    async function measureUpload(idlePing) {
       const circle = document.getElementById("circle");
       circle.className = "speed-circle testing-ul";
-      document.getElementById("phaseText").innerText = "Đang tải lên...";
+      document.getElementById("phaseText").innerText = "Đang tăng tốc...";
       resetChart("#a855f7");
 
-      const CONCURRENCY = 3;
-      const DURATION_MS = 8000;
-      const payload = new Uint8Array(2 * 1024 * 1024);
+      const probe = startLoadedPingProbe("ulLoadedPing", idlePing);
+
+      const CONCURRENCY = 6;
+      const WARMUP_MS = 2000;
+      const DURATION_MS = 10000;
+      const payload = new Uint8Array(4 * 1024 * 1024);
+
       let totalBytes = 0;
+      let measuredBytes = 0;
+      let measureStartTime = null;
       let lastSampleBytes = 0;
       let lastSampleTime = performance.now();
       let running = true;
@@ -527,7 +625,14 @@
               body: payload,
               cache: "no-store",
             });
-            totalBytes += payload.byteLength;
+            const now = performance.now();
+            const len = payload.byteLength;
+            totalBytes += len;
+
+            if (now - startTime >= WARMUP_MS) {
+              if (measureStartTime === null) measureStartTime = now;
+              measuredBytes += len;
+            }
           } catch (e) {
             break;
           }
@@ -536,27 +641,39 @@
 
       const uiInterval = setInterval(() => {
         const now = performance.now();
-        const elapsedSec = (now - startTime) / 1000;
+        const elapsedMs = now - startTime;
         const deltaSec = (now - lastSampleTime) / 1000;
 
-        if (elapsedSec > 0.15 && deltaSec > 0) {
-          const avgMbps = (totalBytes * 8) / (elapsedSec * 1_000_000);
+        if (elapsedMs > 150 && deltaSec > 0) {
           const instantMbps = ((totalBytes - lastSampleBytes) * 8) / (deltaSec * 1_000_000);
-          document.getElementById("liveSpeed").innerText = avgMbps.toFixed(1);
-          pushChartPoint(instantMbps > 0 ? instantMbps : avgMbps);
+          const fallbackMbps = (totalBytes * 8) / ((elapsedMs / 1000) * 1_000_000);
+          pushChartPoint(instantMbps > 0 ? instantMbps : fallbackMbps);
           lastSampleBytes = totalBytes;
           lastSampleTime = now;
+
+          if (elapsedMs < WARMUP_MS) {
+            document.getElementById("liveSpeed").innerText = (instantMbps > 0 ? instantMbps : fallbackMbps).toFixed(1);
+          } else if (measureStartTime !== null) {
+            document.getElementById("phaseText").innerText = "Đang tải lên...";
+            const validSec = Math.max((now - measureStartTime) / 1000, 0.1);
+            const steadyMbps = (measuredBytes * 8) / (validSec * 1_000_000);
+            document.getElementById("liveSpeed").innerText = steadyMbps.toFixed(1);
+          }
         }
       }, 150);
 
       await Promise.all(Array.from({ length: CONCURRENCY }, (_, i) => worker(i)));
       clearInterval(uiInterval);
+      const loadedPing = probe.stop();
 
-      const totalSec = (performance.now() - startTime) / 1000;
-      const finalMbps = ((totalBytes * 8) / (totalSec * 1_000_000)).toFixed(1);
+      const finalTime = performance.now();
+      const validTotalSec = measureStartTime ? Math.max((finalTime - measureStartTime) / 1000, 0.5) : ((finalTime - startTime) / 1000);
+      const validTotalBytes = measureStartTime ? measuredBytes : totalBytes;
+      const finalMbps = ((validTotalBytes * 8) / (validTotalSec * 1_000_000)).toFixed(1);
+
       document.getElementById("liveSpeed").innerText = finalMbps;
       document.getElementById("ulVal").innerHTML = `${finalMbps} <span>Mbps</span>`;
-      return finalMbps;
+      return { mbps: finalMbps, loadedPing };
     }
 
     function saveHistory(record) {
@@ -588,16 +705,18 @@
         <div class="history-item">
           <div class="hist-meta">
             <div class="hist-isp">${item.isp} • ${item.node}</div>
-            <div class="hist-time">${item.time} • Ping ${item.ping}ms</div>
+            <div class="hist-time">${item.time} • Idle ${item.ping}ms • ${item.bloatLabel || ""}</div>
           </div>
           <div class="hist-speeds">
             <div class="hist-col">
               <span>DOWN</span>
               <strong class="dl-color">${item.dl}</strong>
+              <small>Ping ${item.dlPing || "--"}ms</small>
             </div>
             <div class="hist-col">
               <span>UP</span>
               <strong class="ul-color">${item.ul}</strong>
+              <small>Ping ${item.ulPing || "--"}ms</small>
             </div>
           </div>
         </div>
@@ -613,14 +732,34 @@
       document.getElementById("jitterVal").innerHTML = `-- <span>ms</span>`;
       document.getElementById("dlVal").innerHTML = `-- <span>Mbps</span>`;
       document.getElementById("ulVal").innerHTML = `-- <span>Mbps</span>`;
+      document.getElementById("dlLoadedPing").innerText = `-- ms`;
+      document.getElementById("dlLoadedPing").className = "";
+      document.getElementById("ulLoadedPing").innerText = `-- ms`;
+      document.getElementById("ulLoadedPing").className = "";
+      document.getElementById("bloatStatus").innerText = "Đang kiểm tra...";
+      document.getElementById("bloatStatus").className = "loaded-ping-tag";
 
       await fetchNetworkInfo();
 
       try {
         const { ping, jitter } = await measurePing();
-        const dl = await measureDownload();
-        const ul = await measureUpload();
+        const dlRes = await measureDownload(ping);
+        const ulRes = await measureUpload(ping);
 
+        const maxSpike = Math.max(Number(dlRes.loadedPing) - ping, Number(ulRes.loadedPing) - ping);
+        let bloatLabel = "Bufferbloat: Tốt";
+        let bloatClass = "ping-good";
+        if (maxSpike > 100) {
+          bloatLabel = "Bufferbloat: Nghẽn nặng";
+          bloatClass = "ping-bad";
+        } else if (maxSpike > 35) {
+          bloatLabel = "Bufferbloat: Trung bình";
+          bloatClass = "ping-warn";
+        }
+
+        const bloatEl = document.getElementById("bloatStatus");
+        bloatEl.innerText = bloatLabel;
+        bloatEl.className = `loaded-ping-tag ${bloatClass}`;
         document.getElementById("phaseText").innerText = "Hoàn tất";
 
         const now = new Date();
@@ -631,10 +770,13 @@
           time: timeStr,
           isp: currentNet.isp,
           node: currentNet.node,
-          ping,
+          ping: ping.toFixed(1),
           jitter,
-          dl,
-          ul
+          dl: dlRes.mbps,
+          dlPing: dlRes.loadedPing,
+          ul: ulRes.mbps,
+          ulPing: ulRes.loadedPing,
+          bloatLabel
         });
       } catch (err) {
         document.getElementById("phaseText").innerText = "Lỗi kết nối";
